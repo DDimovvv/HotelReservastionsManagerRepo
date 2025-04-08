@@ -1,0 +1,85 @@
+﻿@model HotelReservastionsManager.Models.Client
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Client</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Adult)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Adult)
+        </dd>
+    </dl>
+</div>
+<div>
+    <h4>Reservations</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Room Number</th>
+                <th>Check-In Date</th>
+                <th>Check-Out Date</th>
+                <th>Breakfast Included</th>
+                <th>All Inclusive</th>
+                <th>Final Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ReservationClients != null && Model.ReservationClients.Any())
+            {
+                @foreach (var rc in Model.ReservationClients)
+                {
+                    <tr>
+                        <td>@rc.Reservation.RoomNumber</td>
+                        <td>@rc.Reservation.CheckInDate.ToShortDateString()</td>
+                        <td>@rc.Reservation.CheckOutDate.ToShortDateString()</td>
+                        <td>@(rc.Reservation.BreakfastIncluded ? "Yes" : "No")</td>
+                        <td>@(rc.Reservation.AllInclusive ? "Yes" : "No")</td>
+                        <td>@rc.Reservation.FinalPrice.ToString("C")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8">No reservations found for this client.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.ClientId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

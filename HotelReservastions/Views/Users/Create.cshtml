@@ -1,0 +1,144 @@
+﻿@model HotelReservastionsManager.Models.User
+
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<h1>Create User</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="EGN" class="control-label">EGN</label>
+                        <input asp-for="EGN" class="form-control" />
+                        <span asp-validation-for="EGN" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="UserName" class="control-label">Username</label>
+                        <input asp-for="UserName" class="form-control" />
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="control-label">First Name</label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="MiddleName" class="control-label">Middle Name</label>
+                        <input asp-for="MiddleName" class="form-control" />
+                        <span asp-validation-for="MiddleName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="LastName" class="control-label">Last Name</label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label">Email</label>
+                        <input asp-for="Email" class="form-control" type="email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="HireDate" class="control-label">Hire Date</label>
+                        <input asp-for="HireDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="HireDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="password" class="control-label">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="confirmPassword" class="control-label">Confirm Password</label>
+                        <input type="password" id="confirmPassword" class="form-control" required />
+                        <span id="passwordMismatch" class="text-danger" style="display: none;">Passwords do not match</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" id="submitBtn" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            const mismatchElement = document.getElementById('passwordMismatch');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (password !== confirmPassword) {
+                mismatchElement.style.display = 'block';
+                submitBtn.disabled = true;
+            } else {
+                mismatchElement.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (confirmPassword) {
+                const mismatchElement = document.getElementById('passwordMismatch');
+                const submitBtn = document.getElementById('submitBtn');
+
+                if (this.value !== confirmPassword) {
+                    mismatchElement.style.display = 'block';
+                    submitBtn.disabled = true;
+                } else {
+                    mismatchElement.style.display = 'none';
+                    submitBtn.disabled = false;
+                }
+            }
+        });
+    </script>
+}

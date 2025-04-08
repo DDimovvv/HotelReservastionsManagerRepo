@@ -1,0 +1,124 @@
+﻿@model HotelReservastionsManager.Models.User
+
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<h1>Edit User</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit" asp-route-id="@Model.EGN">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="EGN" />
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="EGN" class="control-label">EGN</label>
+                        <input asp-for="EGN" class="form-control" disabled />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="UserName" class="control-label">Username</label>
+                        <input asp-for="UserName" class="form-control" />
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="control-label">First Name</label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="MiddleName" class="control-label">Middle Name</label>
+                        <input asp-for="MiddleName" class="form-control" />
+                        <span asp-validation-for="MiddleName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="LastName" class="control-label">Last Name</label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label">Email</label>
+                        <input asp-for="Email" class="form-control" type="email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="HireDate" class="control-label">Hire Date</label>
+                        <input asp-for="HireDate" class="form-control" type="date" value="@Model.HireDate.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="HireDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input asp-for="Active" class="form-check-input" id="activeCheckbox" />
+                            <label asp-for="Active" class="form-check-label">Active</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3" id="releaseDateRow" style="@(Model.Active ? "display: none;" : "")">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="ReleaseDate" class="control-label">Release Date</label>
+                        <input asp-for="ReleaseDate" class="form-control" type="date" value="@(Model.ReleaseDate.HasValue ? Model.ReleaseDate.Value.ToString("yyyy-MM-dd") : DateTime.Today.ToString("yyyy-MM-dd"))" />
+                        <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-4">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.getElementById('activeCheckbox').addEventListener('change', function() {
+            const releaseDateRow = document.getElementById('releaseDateRow');
+            if (this.checked) {
+                releaseDateRow.style.display = 'none';
+            } else {
+                releaseDateRow.style.display = '';
+            }
+        });
+    </script>
+}
