@@ -21,7 +21,7 @@ namespace HotelReservastionsManager.Controllers
         }
 
         // GET: User
-        public async Task<IActionResult> Index(string searchEgn)
+        public async Task<IActionResult> Index(string searchEgn, string searchUserName)
         {
             var users = from u in _context.Users
                         select u;
@@ -29,7 +29,13 @@ namespace HotelReservastionsManager.Controllers
             if (!string.IsNullOrEmpty(searchEgn))
             {
                 users = users.Where(u => u.EGN.Contains(searchEgn));
-                ViewData["CurrentFilter"] = searchEgn;
+                ViewData["CurrentEgnFilter"] = searchEgn;
+            }
+
+            if (!string.IsNullOrEmpty(searchUserName))
+            {
+                users = users.Where(u => u.UserName.Contains(searchUserName));
+                ViewData["CurrentUserNameFilter"] = searchUserName;
             }
 
             return View(await users.ToListAsync());

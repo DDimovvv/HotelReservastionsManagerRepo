@@ -119,14 +119,14 @@ namespace HotelReservastionsManager.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoomNumber"));
 
-                    b.Property<double>("AdultPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("AdultPrice")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
-                    b.Property<double>("ChildPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("ChildPrice")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");

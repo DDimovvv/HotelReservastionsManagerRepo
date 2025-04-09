@@ -54,9 +54,11 @@
 
             <div class="form-group mb-3">
                 <label asp-for="FinalPrice" class="control-label"></label>
-                <input asp-for="FinalPrice" class="form-control" />
+                <input id="FinalPrice" class="form-control" readonly />
                 <span asp-validation-for="FinalPrice" class="text-danger"></span>
+                <small class="form-text text-muted">Price automatically calculated based on room, dates, clients, and meal options.</small>
             </div>
+            <input type="hidden" name="FinalPrice" asp-for="FinalPrice" />
 
             <h4>Clients staying in the room</h4>
             <div id="clientsContainer">
@@ -106,10 +108,32 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function() {
+            const roomNumberSelect = document.getElementById('RoomNumber');
+            const checkInDateInput = document.getElementById('CheckInDate');
+            const checkOutDateInput = document.getElementById('CheckOutDate');
+            const breakfastCheckbox = document.getElementById('breakfastIncluded');
+            const allInclusiveCheckbox = document.getElementById('allInclusive');
+            const finalPriceInput = document.getElementById('FinalPrice');
             const clientsContainer = document.getElementById('clientsContainer');
             const addClientBtn = document.getElementById('addClientBtn');
+
+            const BREAKFAST_PRICE_PER_NIGHT = 30;
+            const ALL_INCLUSIVE_PRICE_PER_NIGHT = 50;
+
+            let roomPriceData = {};
+
             let clientCount = 1;
+            let adultCount = 1;
+            let childCount = 0;
+
+            fetchRoomPriceData();
+
+            roomNumberSelect.addEventListener('change', calculatePrice);
+            checkInDateInput.addEventListener('change', calculatePrice);
+            checkOutDateInput.addEventListener('change', calculatePrice);
+            breakfastCheckbox.addEventListener('change', calculatePrice);
+            allInclusiveCheckbox.addEventListener('change', calculatePrice);
 
             addClientBtn.addEventListener('click', function() {
                 clientCount++;
@@ -143,7 +167,7 @@
                         </div>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="ClientAdult[${newIndex}]" value="true" id="adult${newIndex}" checked>
+                        <input class="form-check-input client-adult-checkbox" type="checkbox" name="ClientAdult[${newIndex}]" value="true" id="adult${newIndex}" checked>
                         <label class="form-check-label" for="adult${newIndex}">
                             Adult
                         </label>
@@ -155,19 +179,39 @@
                 const removeBtn = clientRow.querySelector('.remove-client');
                 removeBtn.addEventListener('click', function() {
                     clientRow.remove();
+                    updateClientCounts();
+                    calculatePrice();
                 });
+
+                const adultCheckbox = clientRow.querySelector('.client-adult-checkbox');
+                adultCheckbox.addEventListener('change', function() {
+                    updateClientCounts();
+                    calculatePrice();
+                });
+
+                updateClientCounts();
+                calculatePrice();
             });
 
-            const breakfastCheckbox = document.getElementById('breakfastIncluded');
-            const allInclusiveCheckbox = document.getElementById('allInclusive');
-            const mealOptionError = document.getElementById('mealOptionError');
-            const form = document.getElementById('reservationForm');
+            document.querySelector('#adult0').addEventListener('change', function() {
+                updateClientCounts();
+                calculatePrice();
+            });
+
+            clientsContainer.addEventListener('click', function(event) {
+                if (event.target.classList.contains('remove-client')) {
+                    const clientRow = event.target.closest('.client-row');
+                    clientRow.remove();
+                    updateClientCounts();
+                    calculatePrice();
+                }
+            });
 
             validateMealOptions();
-
             breakfastCheckbox.addEventListener('change', validateMealOptions);
             allInclusiveCheckbox.addEventListener('change', validateMealOptions);
 
+            const form = document.getElementById('reservationForm');
             form.addEventListener('submit', function(event) {
                 if (breakfastCheckbox.checked && allInclusiveCheckbox.checked) {
                     event.preventDefault();
@@ -180,11 +224,78 @@
             });
 
             function validateMealOptions() {
+                const mealOptionError = document.getElementById('mealOptionError');
                 if (breakfastCheckbox.checked && allInclusiveCheckbox.checked) {
                     mealOptionError.style.display = 'block';
                 } else {
                     mealOptionError.style.display = 'none';
                 }
+
+                calculatePrice();
+            }
+
+            function updateClientCounts() {
+                const adultCheckboxes = document.querySelectorAll('.client-adult-checkbox');
+                adultCount = 0;
+                childCount = 0;
+
+                adultCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        adultCount++;
+                    } else {
+                        childCount++;
+                    }
+                });
+            }
+
+            function fetchRoomPriceData() {
+                fetch('/Reservations/GetRoomPrices')
+                    .then(response => response.json())
+                    .then(data => {
+                        roomPriceData = data;
+                        calculatePrice();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching room prices:', error);
+                    });
+            }
+
+            function calculatePrice() {
+                const roomNumber = roomNumberSelect.value;
+                if (!roomNumber || !roomPriceData[roomNumber]) {
+                    finalPriceInput.value = '0.00';
+                    return;
+                }
+
+                const roomData = roomPriceData[roomNumber];
+                const adultPrice = roomData.adultPrice;
+                const childPrice = roomData.childPrice;
+
+                const checkInDate = new Date(checkInDateInput.value);
+                const checkOutDate = new Date(checkOutDateInput.value);
+
+                if (isNaN(checkInDate) || isNaN(checkOutDate) || checkOutDate <= checkInDate) {
+                    finalPriceInput.value = '0.00';
+                    return;
+                }
+
+                const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+                const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                let basePrice = (adultCount * adultPrice + childCount * childPrice) * nights;
+
+                let mealPrice = 0;
+                if (breakfastCheckbox.checked) {
+                    mealPrice = BREAKFAST_PRICE_PER_NIGHT * (adultCount + childCount) * nights;
+                } else if (allInclusiveCheckbox.checked) {
+                    mealPrice = ALL_INCLUSIVE_PRICE_PER_NIGHT * (adultCount + childCount) * nights;
+                }
+
+                const finalPrice = basePrice + mealPrice;
+
+                finalPriceInput.value = finalPrice.toFixed(2);
+
+                document.querySelector('input[name="FinalPrice"]').value = finalPrice.toString().replace('.', ',');
             }
         });
     </script>

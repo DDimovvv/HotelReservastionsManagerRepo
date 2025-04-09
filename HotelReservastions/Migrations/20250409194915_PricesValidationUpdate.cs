@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HotelReservastionsManager.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class PricesValidationUpdate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -83,8 +83,8 @@ namespace HotelReservastionsManager.Migrations
                     Capacity = table.Column<int>(type: "int", nullable: false),
                     RoomType = table.Column<int>(type: "int", nullable: false),
                     IsAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    AdultPrice = table.Column<double>(type: "float", nullable: false),
-                    ChildPrice = table.Column<double>(type: "float", nullable: false)
+                    AdultPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ChildPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {

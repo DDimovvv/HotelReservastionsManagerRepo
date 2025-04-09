@@ -83,6 +83,16 @@ namespace HotelReservastionsManager.Controllers
             List<string> ClientEmail,
             List<bool> ClientAdult)
         {
+            if (reservation.CheckInDate >= reservation.CheckOutDate)
+            {
+                ModelState.AddModelError("CheckOutDate", "Check-out date must be after check-in date");
+            }
+            if (Request.Form.TryGetValue("FinalPrice", out var fpVal))
+            {
+                double.TryParse(fpVal.ToString().Replace('.', ','), out var finalPrice);
+                reservation.FinalPrice = finalPrice;
+                ModelState.Remove("FinalPrice");
+            }
             if (ModelState.IsValid)
             {
                 using var transaction = await _context.Database.BeginTransactionAsync();
@@ -221,6 +231,11 @@ namespace HotelReservastionsManager.Controllers
             if (id != reservation.ReservationId)
             {
                 return NotFound();
+            }
+
+            if (reservation.CheckInDate >= reservation.CheckOutDate)
+            {
+                ModelState.AddModelError("CheckOutDate", "Check-out date must be after check-in date");
             }
 
             if (ModelState.IsValid)
@@ -416,6 +431,22 @@ namespace HotelReservastionsManager.Controllers
         private bool ReservationExists(int id)
         {
             return _context.Reservations.Any(e => e.ReservationId == id);
+        }
+        [HttpGet]
+        public JsonResult GetRoomPrices()
+        {
+            var rooms = _context.Rooms.Select(r => new
+            {
+                r.RoomNumber,
+                r.AdultPrice,
+                r.ChildPrice
+            }).ToDictionary(r => r.RoomNumber.ToString(), r => new
+            {
+                r.AdultPrice,
+                r.ChildPrice
+            });
+
+            return Json(rooms);
         }
     }
 }

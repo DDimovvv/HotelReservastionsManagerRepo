@@ -27,6 +27,27 @@
             }
         </div>
     </div>
+    <div class="col-md-6">
+        <form asp-action="Index" method="get">
+            <div class="form-group row">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <input type="text" name="searchUserName" value="@ViewData["CurrentUserNameFilter"]" class="form-control" placeholder="Search by username..." />
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    @if (!string.IsNullOrEmpty((string)ViewData["CurrentUserNameFilter"]))
+                    {
+                        <a asp-action="Index" class="btn btn-secondary">Clear</a>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+
 </form>
 
 <table class="table table-striped">
@@ -34,8 +55,8 @@
         <tr>
             <th>@Html.DisplayNameFor(model => model.EGN)</th>
             <th>@Html.DisplayNameFor(model => model.FirstName)</th>
-            <th>@Html.DisplayNameFor(model => model.MiddleName)</th>
             <th>@Html.DisplayNameFor(model => model.LastName)</th>
+			<th>@Html.DisplayNameFor(model => model.UserName)</th>
             <th>@Html.DisplayNameFor(model => model.HireDate)</th>
             <th>@Html.DisplayNameFor(model => model.Active)</th>
             <th>@Html.DisplayNameFor(model => model.ReleaseDate)</th>
@@ -49,8 +70,8 @@
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.EGN)</td>
                 <td>@Html.DisplayFor(modelItem => item.FirstName)</td>
-                <td>@Html.DisplayFor(modelItem => item.MiddleName)</td>
                 <td>@Html.DisplayFor(modelItem => item.LastName)</td>
+				<td>@Html.DisplayFor(modelItem => item.UserName)</td>
                 <td>@Html.DisplayFor(modelItem => item.HireDate)</td>
                 <td>@Html.DisplayFor(modelItem => item.Active)</td>
                 <td>@Html.DisplayFor(modelItem => item.ReleaseDate)</td>

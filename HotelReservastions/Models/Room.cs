@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HotelReservastionsManager.Models
 {
@@ -13,9 +14,17 @@ namespace HotelReservastionsManager.Models
         public RoomTypes RoomType { get; set; }
         public bool IsAvailable { get; set; }
         [Required]
-        public double AdultPrice { get; set; }
+        [DataType(DataType.Currency)]
+        [Column(TypeName = "decimal(18, 2)")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Adult price must be greater than 0")]
+        public decimal AdultPrice { get; set; }
         [Required]
-        public double ChildPrice { get; set; }
+        [DataType(DataType.Currency)]
+        [Column(TypeName = "decimal(18, 2)")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Child price must be greater than 0")]
+        public decimal ChildPrice { get; set; }
         public ICollection<Reservation>? Reservations { get; set; }
     }
 }

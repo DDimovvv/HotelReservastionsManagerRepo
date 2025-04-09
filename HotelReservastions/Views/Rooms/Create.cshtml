@@ -30,12 +30,13 @@
             </div>
             <div class="form-group">
                 <label asp-for="AdultPrice" class="control-label"></label>
-                <input asp-for="AdultPrice" class="form-control" />
+                <input asp-for="AdultPrice" class="form-control" type="number" step="0.01" />
                 <span asp-validation-for="AdultPrice" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="ChildPrice" class="control-label"></label>
-                <input asp-for="ChildPrice" class="form-control" />
+                <input asp-for="ChildPrice" class="form-control" type="number" step="0.01" />
                 <span asp-validation-for="ChildPrice" class="text-danger"></span>
             </div>
             <div class="form-group">

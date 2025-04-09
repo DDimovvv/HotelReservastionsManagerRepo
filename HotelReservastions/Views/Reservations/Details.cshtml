@@ -54,6 +54,40 @@
         </dd>
     </dl>
 </div>
+<h4 class="mt-4">Clients</h4>
+<hr />
+<div>
+    @if (Model.ReservationClients != null && Model.ReservationClients.Any())
+    {
+    <table class="table">
+            <thead>
+                <tr>
+                    <th>First name</th>
+					<th>Last name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Adult</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var rc in Model.ReservationClients)
+                {
+                    <tr>
+                        <td>@rc.Client.FirstName</td>
+                        <td>@rc.Client.LastName</td>
+                        <td>@rc.Client.PhoneNumber</td>
+                        <td>@rc.Client.Email</td>
+                        <td>@(rc.Client.Adult ? "Yes" : "No")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No clients found for this reservation.</p>
+    }
+</div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.ReservationId">Edit</a> |
     <a asp-action="Index">Back to List</a>

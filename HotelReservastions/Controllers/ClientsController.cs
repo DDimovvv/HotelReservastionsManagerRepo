@@ -62,6 +62,16 @@ namespace HotelReservastionsManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ClientId,FirstName,LastName,PhoneNumber,Email,Adult")] Client client)
         {
+            if (_context.Clients.Any(c => c.Email == client.Email))
+            {
+                ModelState.AddModelError("Email", "This email is already in use.");
+            }
+
+            if (_context.Clients.Any(c => c.PhoneNumber == client.PhoneNumber))
+            {
+                ModelState.AddModelError("PhoneNumber", "This phone number is already in use.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(client);
@@ -97,6 +107,16 @@ namespace HotelReservastionsManager.Controllers
             if (id != client.ClientId)
             {
                 return NotFound();
+            }
+
+            if (_context.Clients.Any(c => c.Email == client.Email && c.ClientId != client.ClientId))
+            {
+                ModelState.AddModelError("Email", "This email is already in use.");
+            }
+
+            if (_context.Clients.Any(c => c.PhoneNumber == client.PhoneNumber && c.ClientId != client.ClientId))
+            {
+                ModelState.AddModelError("PhoneNumber", "This phone number is already in use.");
             }
 
             if (ModelState.IsValid)
