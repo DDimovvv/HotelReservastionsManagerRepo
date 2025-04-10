@@ -77,18 +77,31 @@ namespace HotelReservastionsManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                user.Id = Guid.NewGuid().ToString();
-                user.Active = true;
+
+                if (string.IsNullOrEmpty(user.UserName))
+                {
+                    user.UserName = user.Email;
+                }
+
+                user.EmailConfirmed = true;
+
+                user.NormalizedUserName = user.UserName.ToUpper();
+                user.NormalizedEmail = user.Email.ToUpper();
+
+                Console.WriteLine($"Creating user - Username: {user.UserName}, Email: {user.Email}");
 
                 var result = await _userManager.CreateAsync(user, password);
 
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, "User");
+                    Console.WriteLine($"Successfully created user: {user.UserName} with ID: {user.Id}");
                     return RedirectToAction(nameof(Index));
                 }
 
                 foreach (var error in result.Errors)
                 {
+                    Console.WriteLine($"User creation error: {error.Description}");
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }

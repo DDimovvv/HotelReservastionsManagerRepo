@@ -20,6 +20,12 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.buttonsforLogReg {
+    position: absolute;
+    right: 0;
+}
+
 footer {
     position: fixed;
     bottom: 0;
