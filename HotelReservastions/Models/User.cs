@@ -18,6 +18,9 @@ namespace HotelReservastionsManager.Models
         [StringLength(50)]
         public string LastName { get; set; }
         [Required]
+        [StringLength(10, MinimumLength = 10)]
+        public override string? PhoneNumber { get => base.PhoneNumber; set => base.PhoneNumber = value; }
+        [Required]
         public DateOnly HireDate { get; set; }
         public bool Active { get; set; }
         public DateOnly? ReleaseDate { get; set; } = null;

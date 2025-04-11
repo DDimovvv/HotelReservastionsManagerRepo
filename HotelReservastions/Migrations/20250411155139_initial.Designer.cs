@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelReservastionsManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250410190227_initial")]
+    [Migration("20250411155139_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -205,7 +205,9 @@ namespace HotelReservastionsManager.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");

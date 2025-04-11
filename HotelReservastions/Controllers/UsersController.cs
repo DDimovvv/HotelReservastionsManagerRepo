@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using HotelReservastionsManager.Models;
 using HotelReservastionsManager.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservastionsManager.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -75,27 +77,41 @@ namespace HotelReservastionsManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("EGN,FirstName,MiddleName,LastName,HireDate,Active,Email,PhoneNumber,UserName")] User user, string password)
         {
+            if (await _context.Users.AnyAsync(u => u.EGN == user.EGN))
+            {
+                ModelState.AddModelError("EGN", "This EGN is already in use by another user.");
+            }
+
+            if (await _userManager.FindByEmailAsync(user.Email) != null)
+            {
+                ModelState.AddModelError("Email", "This email is already in use by another user.");
+            }
+
+            if (!string.IsNullOrEmpty(user.PhoneNumber) &&
+                await _context.Users.AnyAsync(u => u.PhoneNumber == user.PhoneNumber))
+            {
+                ModelState.AddModelError("PhoneNumber", "This phone number is already in use by another user.");
+            }
+
+            if (string.IsNullOrEmpty(password))
+            {
+                ModelState.AddModelError("password", "Password is required.");
+            }
+
             if (ModelState.IsValid)
             {
-
                 if (string.IsNullOrEmpty(user.UserName))
                 {
                     user.UserName = user.Email;
                 }
-
                 user.EmailConfirmed = true;
-
-                user.NormalizedUserName = user.UserName.ToUpper();
-                user.NormalizedEmail = user.Email.ToUpper();
-
-                Console.WriteLine($"Creating user - Username: {user.UserName}, Email: {user.Email}");
+                user.Active = true;
 
                 var result = await _userManager.CreateAsync(user, password);
 
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, "User");
-                    Console.WriteLine($"Successfully created user: {user.UserName} with ID: {user.Id}");
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -134,6 +150,29 @@ namespace HotelReservastionsManager.Controllers
                 return NotFound();
             }
 
+            if (await _context.Users.AnyAsync(u => u.EGN == user.EGN && u.Id != id))
+            {
+                ModelState.AddModelError("EGN", "This EGN is already in use by another user.");
+            }
+
+            var existingEmailUser = await _userManager.FindByEmailAsync(user.Email);
+            if (existingEmailUser != null && existingEmailUser.Id != id)
+            {
+                ModelState.AddModelError("Email", "This email is already in use by another user.");
+            }
+
+            if (!string.IsNullOrEmpty(user.PhoneNumber) &&
+                await _context.Users.AnyAsync(u => u.PhoneNumber == user.PhoneNumber && u.Id != id))
+            {
+                ModelState.AddModelError("PhoneNumber", "This phone number is already in use by another user.");
+            }
+
+            if (user.ReleaseDate.HasValue && user.ReleaseDate <= user.HireDate)
+            {
+                ModelState.AddModelError("ReleaseDate", "Release date must be after hire date.");
+            }
+
+
             if (ModelState.IsValid)
             {
                 try
@@ -161,6 +200,11 @@ namespace HotelReservastionsManager.Controllers
                     {
                         existingUser.Active = false;
                         existingUser.ReleaseDate = user.ReleaseDate ?? DateOnly.FromDateTime(DateTime.Today);
+                        if (existingUser.ReleaseDate <= existingUser.HireDate)
+                        {
+                            ModelState.AddModelError("ReleaseDate", "Release date must be after hire date.");
+                            return View(user);
+                        }
                     }
                     else if (!existingUser.Active && user.Active)
                     {
