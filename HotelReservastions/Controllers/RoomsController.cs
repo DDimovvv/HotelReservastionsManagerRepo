@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HotelReservastionsManager.Data;
 using HotelReservastionsManager.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservastionsManager.Controllers
 {
@@ -20,12 +21,14 @@ namespace HotelReservastionsManager.Controllers
         }
 
         // GET: Rooms
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Rooms.ToListAsync());
         }
 
         // GET: Rooms/Details/5
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -44,6 +47,7 @@ namespace HotelReservastionsManager.Controllers
         }
 
         // GET: Rooms/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -54,6 +58,7 @@ namespace HotelReservastionsManager.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("RoomNumber,Capacity,RoomType,IsAvailable,AdultPrice,ChildPrice")] Room room)
         {
             if (ModelState.IsValid)
@@ -66,6 +71,7 @@ namespace HotelReservastionsManager.Controllers
         }
 
         // GET: Rooms/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,6 +92,7 @@ namespace HotelReservastionsManager.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("RoomNumber,Capacity,RoomType,IsAvailable,AdultPrice,ChildPrice")] Room room)
         {
             if (id != room.RoomNumber)
@@ -117,6 +124,7 @@ namespace HotelReservastionsManager.Controllers
         }
 
         // GET: Rooms/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -137,6 +145,7 @@ namespace HotelReservastionsManager.Controllers
         // POST: Rooms/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var room = await _context.Rooms.FindAsync(id);

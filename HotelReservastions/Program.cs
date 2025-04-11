@@ -49,6 +49,7 @@ using (var scope = app.Services.CreateScope())
             FirstName = "Hotel",
             MiddleName = "Reservations",
             LastName = "Administrator",
+            PhoneNumber = "0890088999",
             HireDate = DateOnly.FromDateTime(DateTime.Now),
             Active = true
         };

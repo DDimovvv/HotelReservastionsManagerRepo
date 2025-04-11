@@ -202,7 +202,9 @@ namespace HotelReservastionsManager.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
